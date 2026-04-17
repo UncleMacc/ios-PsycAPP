@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychiatric Diagnostic Assistant - Clinical Version</title>
+    <style>
+        /* Modern, Professional Clinical Medical Software UI */
+        :root {
+            --primary-navy: #1B2A47;
+            --medical-blue: #005A9C;
+            --light-bg: #E8EDF2;
+            --white: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-gray: #7F8C8D;
+            --border-color: #D1D8E0;
+            --alert-red: #C0392B;
+            --back-gray: #95a5a6;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        .system-container {
+            background-color: var(--white);
+            width: 100%;
+            max-width: 850px;
+            border-radius: 8px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 8px solid var(--primary-navy);
+        }
+
+        /* Top Navigation Bar */
+        .system-header {
+            background-color: var(--primary-navy);
+            color: var(--white);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .system-title {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .system-status {
+            font-size: 0.85rem;
+            color: #A9DFBF;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #2ECC71;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Content Area */
+        .workspace {
+            padding: 50px 40px;
+            min-height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-image: linear-gradient(to right, #f8f9fa 1px, transparent 1px), linear-gradient(to bottom, #f8f9fa 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+        }
+
+        .step-indicator {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--medical-blue);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 15px;
+            display: inline-block;
+            border-bottom: 2px solid var(--medical-blue);
+            padding-bottom: 4px;
+        }
+
+        .clinical-question {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin: 0 0 40px 0;
+            line-height: 1.5;
+            color: var(--text-dark);
+        }
+
+        /* Buttons */
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-top: auto;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 18px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            background-color: var(--white);
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            border-color: var(--medical-blue);
+            background-color: #F0F6FA;
+            box-shadow: 0 4px 10px rgba(0, 90, 156, 0.1);
+        }
+
+        .back-btn {
+            background-color: transparent;
+            color: var(--back-gray);
+            border: 2px solid var(--border-color);
+            padding: 12px 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s ease;
+            margin-bottom: 20px;
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background-color: #f1f2f6;
+            color: var(--text-dark);
+        }
+
+        .primary-btn {
+            background-color: var(--medical-blue);
+            color: var(--white);
+            border: none;
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+
+        .primary-btn:hover {
+            background-color: #004578;
+        }
+
+        /* Result Report Styles */
+        .report-screen {
+            animation: fadeIn 0.4s ease-in;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .medical-record-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            font-family: "Courier New", Courier, monospace;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+        }
+
+        .diagnosis-stamp {
+            display: inline-block;
+            border: 4px solid var(--alert-red);
+            padding: 15px 30px;
+            border-radius: 4px;
+            transform: rotate(-3deg);
+            margin-bottom: 30px;
+            opacity: 0.9;
+            align-self: flex-start;
+        }
+
+        .stamp-title {
+            font-size: 0.8rem;
+            color: var(--alert-red);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .stamp-result {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--alert-red);
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .clinical-notes {
+            background-color: #F8F9FA;
+            border-left: 5px solid var(--medical-blue);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .clinical-notes h4 {
+            margin: 0 0 10px 0;
+            color: var(--medical-blue);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .clinical-notes p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-dark);
+        }
+
+        .bottom-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .hidden { display: none !important; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animations for transitions */
+        .fade-transition {
+            transition: opacity 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="system-container">
+        <div class="system-header">
+            <h1 class="system-title">DSM-5 Diagnostic Decision Tree</h1>
+            <div class="system-status">
+                <span class="status-dot"></span> SECURE CONNECTION
+            </div>
+        </div>
+
+        <div class="workspace">
+            
+            <div id="welcome-screen" style="text-align: center; margin: auto;">
+                <h2 style="font-size: 2rem; color: var(--primary-navy); margin-bottom: 10px;">Psychiatric Diagnostic Assistant</h2>
+                <p style="color: var(--text-gray); margin-bottom: 40px;">Anxiety Disorders Differential Diagnosis Module</p>
+                <button class="primary-btn" style="padding: 20px 40px; font-size: 1.2rem;" onclick="startEvaluation()">
+                    Begin Clinical Evaluation
+                </button>
+            </div>
+
+            <div id="question-screen" class="hidden fade-transition" style="display: flex; flex-direction: column; height: 100%;">
+                
+                <button class="back-btn hidden" id="back-btn-q" onclick="goBack()">
+                    ◀ Previous Step
+                </button>
+
+                <div class="step-indicator" id="step-label">Step 1</div>
+                <h2 class="clinical-question" id="question-text">Loading diagnostic criteria...</h2>
+                
+                <div class="controls">
+                    <button class="action-btn" onclick="handleAnswer('yes')">YES (Criteria Met)</button>
+                    <button class="action-btn" onclick="handleAnswer('no')">NO (Rule Out)</button>
+                </div>
+            </div>
+
+            <div id="result-screen" class="report-screen hidden fade-transition">
+                <div class="medical-record-header">
+                    DEPARTMENT OF PSYCHIATRY | AUTOMATED DIAGNOSTIC REPORT<br>
+                    ID: <span id="random-id"></span> | DATE: <span id="current-date"></span>
+                </div>
+
+                <div class="diagnosis-stamp">
+                    <div class="stamp-title">Primary Diagnosis</div>
+                    <h2 class="stamp-result" id="result-name">DISORDER</h2>
+                </div>
+                
+                <div class="clinical-notes">
+                    <h4>Physician's Notes</h4>
+                    <p id="result-notes">System notes will appear here.</p>
+                </div>
+
+                <div class="bottom-actions">
+                    <button class="back-btn" style="margin-bottom: 0;" onclick="goBack()">
+                        ◀ Re-evaluate Last Answer
+                    </button>
+                    <button class="primary-btn" style="margin-top: 0;" onclick="startEvaluation()">
+                        Evaluate Next Patient
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Set dynamic date and ID for the medical report look
+        document.getElementById('current-date').innerText = new Date().toISOString().split('T')[0];
+
+        // Clinical Logic Tree (English Only)
+        const logicTree = {
+            q1: {
+                step: "Step 1: Specific Trigger Evaluation",
+                text: "Does the patient experience intense fear triggered by ONE specific object or situation (e.g., spiders, heights, needles)? Is it completely out of proportion to actual danger and lasting 6+ months?",
+                yes: "res_phobia",
+                no: "q2"
+            },
+            q2: {
+                step: "Step 2: Social & Performance Evaluation",
+                text: "Is the patient's core fear specifically about being judged, embarrassed, or negatively evaluated by other people in social or performance settings?",
+                yes: "res_social",
+                no: "q3"
+            },
+            q3: {
+                step: "Step 3: Panic Attack Screening",
+                text: "Has the patient experienced sudden, unexpected Panic Attacks — intense surges of physical fear (e.g., pounding heart, shortness of breath, fear of dying) out of nowhere?",
+                yes: "q4",
+                no: "q5"
+            },
+            q4: {
+                step: "Step 4: Avoidance & Escape Behavior",
+                text: "Because they are terrified of having another panic attack, do they actively avoid public places (e.g., crowds, transit, open spaces) because escape would be difficult or help unavailable?",
+                yes: "res_agoraphobia",
+                no: "res_panic"
+            },
+            q5: {
+                step: "Step 5: Pervasive Worry Screening",
+                text: "Does the patient experience constant, uncontrollable, and exhausting worry about many different everyday things (grades, health, family) for over 6 months, accompanied by physical symptoms like muscle tension?",
+                yes: "res_gad",
+                no: "res_none"
+            }
+        };
+
+        const resultsDatabase = {
+            res_phobia: {
+                name: "Specific Phobia",
+                notes: "Condition confirmed. The fear is highly circumscribed. Recommendation: Proceed with exposure therapy protocols. Ensure the fear is not better explained by PTSD or OCD."
+            },
+            res_social: {
+                name: "Social Anxiety Disorder",
+                notes: "Condition confirmed. The core driver is the fear of negative evaluation, distinguishing it from general shyness or specific phobia. Monitor for avoidance behaviors affecting academic performance."
+            },
+            res_agoraphobia: {
+                name: "Agoraphobia",
+                notes: "Condition confirmed. Highly comorbid with Panic Disorder. The patient is restricting their environment to prevent the embarrassment or danger of having a panic-like symptom in public."
+            },
+            res_panic: {
+                name: "Panic Disorder",
+                notes: "Condition confirmed. The patient suffers from 'fear of fear'. They are constantly preoccupied with when the next sudden physiological attack will strike. Assess for maladaptive behavioral changes."
+            },
+            res_gad: {
+                name: "Generalized Anxiety Disorder",
+                notes: "Condition confirmed (GAD). The anxiety is free-floating and pervasive. Monitor accompanying somatic symptoms (muscle tension, irritability, sleep disturbances)."
+            },
+            res_none: {
+                name: "Inconclusive / No Match",
+                notes: "The reported symptoms do not meet the core DSM-5 criteria for the 5 major anxiety disorders. Consider evaluating for Normal Developmental Stress, Depressive Disorders, or conducting a broader clinical interview."
+            }
+        };
+
+        // State Management
+        let currentNode = "q1";
+        let historyStack = []; // To keep track of previous nodes
+
+        const ui = {
+            welcome: document.getElementById('welcome-screen'),
+            question: document.getElementById('question-screen'),
+            result: document.getElementById('result-screen'),
+            stepLabel: document.getElementById('step-label'),
+            questionText: document.getElementById('question-text'),
+            resName: document.getElementById('result-name'),
+            resNotes: document.getElementById('result-notes'),
+            backBtnQ: document.getElementById('back-btn-q')
+        };
+
+        function startEvaluation() {
+            // Reset for new patient
+            document.getElementById('random-id').innerText = 'PT-' + Math.floor(Math.random() * 90000 + 10000);
+            currentNode = "q1";
+            historyStack = [];
+            
+            ui.welcome.classList.add('hidden');
+            ui.result.classList.add('hidden');
+            ui.question.classList.remove('hidden');
+            
+            renderNode();
+        }
+
+        function renderNode() {
+            const data = logicTree[currentNode];
+            
+            // Manage Back button visibility
+            if (historyStack.length === 0) {
+                ui.backBtnQ.classList.add('hidden');
+            } else {
+                ui.backBtnQ.classList.remove('hidden');
+            }
+            
+            // Brief fade effect
+            ui.question.style.opacity = 0;
+            setTimeout(() => {
+                ui.stepLabel.innerText = data.step;
+                ui.questionText.innerText = data.text;
+                ui.question.style.opacity = 1;
+            }, 150);
+        }
+
+        function handleAnswer(answer) {
+            const nextStep = logicTree[currentNode][answer];
+            
+            // Save current state to history before moving forward
+            historyStack.push(currentNode);
+            
+            if (nextStep.startsWith('res_')) {
+                showDiagnosis(nextStep);
+            } else {
+                currentNode = nextStep;
+                renderNode();
+            }
+        }
+
+        function goBack() {
+            if (historyStack.length > 0) {
+                // Get the last node from the stack
+                currentNode = historyStack.pop();
+                
+                // If we are on the result screen, hide it and show the question screen again
+                if (!ui.result.classList.contains('hidden')) {
+                    ui.result.classList.add('hidden');
+                    ui.question.classList.remove('hidden');
+                }
+                
+                renderNode();
+            }
+        }
+
+        function showDiagnosis(resId) {
+            const data = resultsDatabase[resId];
+            
+            ui.question.style.opacity = 0;
+            setTimeout(() => {
+                ui.question.classList.add('hidden');
+                ui.result.classList.remove('hidden');
+                
+                ui.resName.innerText = data.name;
+                ui.resNotes.innerText = data.notes;
+                
+                // Re-trigger stamp animation
+                const stamp = document.querySelector('.diagnosis-stamp');
+                stamp.style.animation = 'none';
+                stamp.offsetHeight; /* trigger reflow */
+                stamp.style.animation = null; 
+            }, 150);
+        }
+    </script>
+</body>
+</html>
